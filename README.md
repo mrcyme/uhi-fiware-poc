@@ -1,47 +1,10 @@
 # Urban Heat Island (UHI) Monitoring Platform
 
-A FIWARE-based microservice platform for monitoring **Urban Heat Islands** in Brussels using satellite orthophotos. The system ingests RGB and NIR aerial imagery, computes vegetation and water indices (NDVI, NDWI), generates heat-risk predictions, and serves all layers through a 3D web viewer.
+A FIWARE-based microservice platform for monitoring **Urban Heat Islands** in Brussels using aerial orthophotos. The system ingests RGB and NIR aerial imagery, computes vegetation and water indices (NDVI, NDWI), generates heat-risk predictions, and serves all layers through a 3D web viewer.
 
 Built on [FIWARE Orion-LD](https://github.com/FIWARE/context.Orion-LD) (NGSI-LD Context Broker) as the central data backbone — all services communicate through Orion entities and subscriptions.
 
 ## Architecture
-
-### Service Communication
-
-The following diagram shows how the different microservices interact. Orion-LD acts as the central message bus: services register entities and subscribe to changes, enabling a fully **event-driven** architecture.
-
-```mermaid
-graph TB
-    subgraph "Docker Compose Network"
-        MONGO[(MongoDB 5.0)]
-        ORION[Orion-LD<br/>Context Broker]
-        GS[GeoServer<br/>WMS Server]
-
-        ING[Ingestion Service<br/>FastAPI :8001]
-        PRED[Prediction Service<br/>FastAPI :8002]
-        SYNC[GeoServer Sync<br/>FastAPI :8003]
-        FE[Frontend<br/>Vue + Cesium :3000]
-    end
-
-    MONGO --- ORION
-
-    ING -- "1 create/update<br/>GeoSpatialLayer entities" --> ORION
-    ORION -- "2 subscription notification<br/>(NDVI/NDWI changed)" --> PRED
-    PRED -- "3 query entity filePath" --> ORION
-    PRED -- "4 create/update<br/>UHIHeatMap entity" --> ORION
-    ORION -- "5 subscription notification<br/>(publishToGeoserver=true)" --> SYNC
-    SYNC -- "6 REST API<br/>publish layer" --> GS
-    FE -- "WMS GetMap" --> GS
-    FE -- "proxy /geoserver" --> GS
-
-    style ORION fill:#ff6b35,color:#fff,stroke:#ff6b35
-    style MONGO fill:#4db33d,color:#fff,stroke:#4db33d
-    style GS fill:#5b8c5a,color:#fff,stroke:#5b8c5a
-    style ING fill:#3498db,color:#fff,stroke:#3498db
-    style PRED fill:#9b59b6,color:#fff,stroke:#9b59b6
-    style SYNC fill:#e67e22,color:#fff,stroke:#e67e22
-    style FE fill:#2ecc71,color:#fff,stroke:#2ecc71
-```
 
 ### Data Flow
 
@@ -110,7 +73,46 @@ flowchart LR
     E_UHI -- "subscription" --> PUB
 
     PUB --> WMS --> CESIUM
+```git
+
+### Service Communication
+
+The following diagram shows how the different microservices interact. Orion-LD acts as the central message bus: services register entities and subscribe to changes, enabling a fully **event-driven** architecture.
+
+```mermaid
+graph TB
+    subgraph "Docker Compose Network"
+        MONGO[(MongoDB 5.0)]
+        ORION[Orion-LD<br/>Context Broker]
+        GS[GeoServer<br/>WMS Server]
+
+        ING[Ingestion Service<br/>FastAPI :8001]
+        PRED[Prediction Service<br/>FastAPI :8002]
+        SYNC[GeoServer Sync<br/>FastAPI :8003]
+        FE[Frontend<br/>Vue + Cesium :3000]
+    end
+
+    MONGO --- ORION
+
+    ING -- "1 create/update<br/>GeoSpatialLayer entities" --> ORION
+    ORION -- "2 subscription notification<br/>(NDVI/NDWI changed)" --> PRED
+    PRED -- "3 query entity filePath" --> ORION
+    PRED -- "4 create/update<br/>UHIHeatMap entity" --> ORION
+    ORION -- "5 subscription notification<br/>(publishToGeoserver=true)" --> SYNC
+    SYNC -- "6 REST API<br/>publish layer" --> GS
+    FE -- "WMS GetMap" --> GS
+    FE -- "proxy /geoserver" --> GS
+
+    style ORION fill:#ff6b35,color:#fff,stroke:#ff6b35
+    style MONGO fill:#4db33d,color:#fff,stroke:#4db33d
+    style GS fill:#5b8c5a,color:#fff,stroke:#5b8c5a
+    style ING fill:#3498db,color:#fff,stroke:#3498db
+    style PRED fill:#9b59b6,color:#fff,stroke:#9b59b6
+    style SYNC fill:#e67e22,color:#fff,stroke:#e67e22
+    style FE fill:#2ecc71,color:#fff,stroke:#2ecc71
 ```
+
+
 
 ## Project Structure
 
