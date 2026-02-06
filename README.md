@@ -73,7 +73,7 @@ flowchart LR
     E_UHI -- "subscription" --> PUB
 
     PUB --> WMS --> CESIUM
-```git
+```
 
 ### Service Communication
 
