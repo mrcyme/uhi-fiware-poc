@@ -1,0 +1,59 @@
+# ========================
+# Data files (large / generated)
+# ========================
+data/raw/
+data/processed/
+
+# ========================
+# GeoServer runtime config
+# ========================
+config/geoserver/
+
+# ========================
+# Environment secrets
+# ========================
+.env
+
+# ========================
+# Docker
+# ========================
+docker-compose.override.yml
+
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# ========================
+# Node.js
+# ========================
+node_modules/
+services/frontend/dist/
+services/frontend/node_modules/
+
+# ========================
+# IDE / OS
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ========================
+# Logs
+# ========================
+*.log
+
